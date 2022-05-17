@@ -77,3 +77,48 @@ jobs:
         echo "Pushing image to ECR..."
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        IMAGE_TAG: ${{ github.sha }}
+      with:
+        image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+
+  scan-ecr:
+    name: scan-ecr
+    runs-on: ubuntu-18.04
+    needs: [deploy]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        IMAGE_TAG: ${{ github.sha }}
+        with:
+          image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+        env:
+          AWS_ACCESS_KEY_ID: key_id
+          AWS_SECRET_ACCESS_KEY: access_key
+          AWS_DEFAULT_REGION: us-west-2
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'trivy-results.sarif'
