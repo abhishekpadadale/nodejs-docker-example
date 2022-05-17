@@ -31,6 +31,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+      IMAGE_TAG: ${{ github.sha }}
     needs: [build]
     steps:
     - name: Checkout
@@ -48,7 +51,8 @@ jobs:
       uses: aws-actions/amazon-ecr-login@v1
 
     - name: Build, tag, and push the image to Amazon ECR
-      id: build-image
+      if: ${{ github.ref != 'refs/heads/master' }}
+      id: build-image-branch
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
