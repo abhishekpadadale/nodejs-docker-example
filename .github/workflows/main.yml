@@ -34,12 +34,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: name/app
-
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -56,9 +50,11 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-        IMAGE_TAG: ${{ steps.meta.outputs.tags }}
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        # Build a docker container and push it to ECR 
+        # Build a docker container and push it to ECR
+        echo $ECR_REPOSITORY
+        echo $ECR_REGISTRY
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         echo "Pushing image to ECR..."
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
