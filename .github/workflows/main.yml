@@ -32,6 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      Registry: '222187627275'
     needs: [build]
     permissions:
       contents: read
@@ -87,12 +88,8 @@ jobs:
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
       with:
-        image-ref: '222187627275.dkr.ecr.ap-southeast-2.amazonaws.com/nodejsdockerexample:${{ github.sha }}'
+        image-ref: '${{ env.Registry}}.dkr.ecr.ap-southeast-2.amazonaws.com/${{ secrets.REPO_NAME}}:${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -106,20 +103,22 @@ jobs:
     name: scan-ecr
     runs-on: ubuntu-18.04
     needs: [deploy]
+    env:
+      Registry: '222187627275'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner - ECR SCAN (IAC)
         uses: aquasecurity/trivy-action@master        
         with:
-          image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
+          image-ref: '${{ env.Registry}}.dkr.ecr.ap-southeast-2.amazonaws.com/${{ secrets.REPO_NAME}}:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-          IMAGE_TAG: ${{ github.sha }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-southeast-2
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v1
