@@ -29,6 +29,8 @@ jobs:
         working-directory: './'
   deploy:
     runs-on: ubuntu-latest
+    env:
+      PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     needs: [build]
     steps:
     - name: Checkout
@@ -59,3 +61,19 @@ jobs:
         echo "Pushing image to ECR..."
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+    
+    - name: Build, tag, and push the master branch to Amazon ECR
+      if: ${{ env.PUSH_PACKAGES }}
+      id: build-image-master
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
+        IMAGE_TAG: latest
+      run: |
+        # Build a docker container and push it to ECR
+        echo $ECR_REPOSITORY
+        echo $ECR_REGISTRY
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        echo "Pushing image to ECR..."
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:latest"
