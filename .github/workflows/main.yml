@@ -1,13 +1,9 @@
 name: express-api-test-build-deploy-docker
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: push
 
 jobs:
-  build:
+  Test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -28,7 +24,7 @@ jobs:
         run: npm test
         working-directory: './'
 
-  deploy:
+  Build-upload-scan-image:
     runs-on: ubuntu-latest
     env:
       PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
