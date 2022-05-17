@@ -33,6 +33,11 @@ jobs:
     env:
       PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
     needs: [build]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -87,7 +92,7 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       with:
-#        image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
+        image-ref: '222187627275.dkr.ecr.ap-southeast-2.amazonaws.com/nodejsdockerexample:$IMAGE_TAG'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
