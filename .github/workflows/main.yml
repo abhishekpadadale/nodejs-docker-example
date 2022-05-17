@@ -87,12 +87,9 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       with:
-        image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
+#        image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
         format: 'sarif'
         output: 'trivy-results.sarif'
-      run: |
-        echo $ECR_REPOSITORY
-        echo $ECR_REGISTRY
 
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v1
