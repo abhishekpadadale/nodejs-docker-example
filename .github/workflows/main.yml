@@ -27,13 +27,11 @@ jobs:
       - name: npm test
         run: npm test
         working-directory: './'
+
   deploy:
     runs-on: ubuntu-latest
     env:
       PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-      ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
-      IMAGE_TAG: ${{ github.sha }}
     needs: [build]
     steps:
     - name: Checkout
