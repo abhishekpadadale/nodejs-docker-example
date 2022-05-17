@@ -103,6 +103,11 @@ jobs:
     name: scan-ecr
     runs-on: ubuntu-18.04
     needs: [deploy]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      security-events: write
     env:
       Registry: '222187627275'
     steps:
