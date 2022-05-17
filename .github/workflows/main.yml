@@ -90,6 +90,9 @@ jobs:
         image-ref: '$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG'
         format: 'sarif'
         output: 'trivy-results.sarif'
+      run: |
+        echo $ECR_REPOSITORY
+        echo $ECR_REGISTRY
 
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v1
