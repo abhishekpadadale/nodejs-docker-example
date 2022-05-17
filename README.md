@@ -1,74 +1,165 @@
-# Node.js Examples
+# API with Express & Handlebar Templates
 
-This repository is a collective of opinionated and real-world examples of how you can use Node.js to build things.
+> Use Express.js to create three (3) routes that consume the [API](https://nodejs.org/dist/index.json)
 
-## How This Repository is Structured
+## Installation Instructions
 
-This repository is structured in a specific way:
+### To run the application
 
-- **Top-level directories** are **category directories** of applications - for example `CLI`, `server`, and `utility` - that enable you to find the specific _kind_ of example you're looking for.
-- **Second-level directories** are **project directories** named after specific modules, frameworks, platforms, or tools - for example, `yargs` is a CLI framework, both `express` and `fastify` are web frameworks, and `moment` is a utility.
-- **Third-level directories** are **example directories**, where specific examples live. You can find a full list of these examples in the [Examples](#examples) section below.
-
-Here is an example of the structure in general terms:
-
-```text
-- examples (root)
-  - category
-    - project
-      - example
-  - category
-    - project
-      - example
-      - example
-      - example
-    - project
-      - example
-      - example
-  - category
-    - project
-      - example
-    - project
-      - example
-      - example
+```bash
+npm start
 ```
 
-Each **example** has a few properties (if one doesn't, please [let us know](https://github.com/nodejs/examples/issues/new)):
+### To run the tests
 
-- Usable example code.
-- Passing tests.
-- A README.md that explains what the example does and how to use it.
+```bash
+npm test
+```
 
-## Examples
+## Goals
 
-### CLI
+1. Fetch data from an API and serve JSON content as response
+2. Render out data using dynamic template files
+3. Identify and write useful tests
 
-Command Line Interfaces (CLIs) are tools that can be accessed exclusively from the command line that generally serve some utility. There is a vibrant community of Node.js CLI utilities, ranging from packages to make it slightly easier to accomplish something to full frameworks for building CLI experiences.
+### Routes
 
-- [CLI](./cli)
-  - [yargs](./cli/yargs)
-    - [countEntriesInDirectory](./cli/yargs/countEntriesInDirectory): A small command line tool that shows how to use yargs and Node.js together, leveraging Node.js's `path` and `fs` modules to read a directory passed by the CLI user
+#### GET - dependencies
 
-## Contributing
+This will retrieve all dependencies from the `package.json` and render HTML using handlebars.
 
-We've documented how to meaningfully contribute in [CONTRIBUTING.md](./CONTRIBUTING.md) 🤗
+##### Example Response - `/dependencies`
 
-### Thank You To Our Contributors
+```html
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <ul>
+      <li>bent - ^7.3.7</li>
+      <li>express - ^4.17.1</li>
+      <li>hbs - ^4.1.1</li>
+      <li>semver - ^7.3.2</li>
+    </ul>
+  </body>
+</html>
+```
 
-> We use All Contributors for this section of the README. Please ensure you have the `all-contributors-cli` installed if you're modifying it. See the [All Contributors CLI Usage](https://allcontributors.org/docs/en/cli/usage) documentation for details on usage. See the [emoji key](https://allcontributors.org/docs/en/emoji-key) for details on what each emoji represents.
+#### GET - `/api/minimum-secure`
 
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://bnb.im"><img src="https://avatars3.githubusercontent.com/u/502396?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Tierney Cyren</b></sub></a><br /><a href="https://github.com/node/examples/commits?author=bnb" title="Code">💻</a> <a href="#content-bnb" title="Content">🖋</a> <a href="https://github.com/node/examples/commits?author=bnb" title="Documentation">📖</a> <a href="https://github.com/node/examples/commits?author=bnb" title="Tests">⚠️</a></td>
-    <td align="center"><a href="https://github.com/mcollina"><img src="https://avatars0.githubusercontent.com/u/52195?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Matteo Collina</b></sub></a><br /><a href="#infra-mcollina" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#ideas-mcollina" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://thiru.xyz/"><img src="https://avatars1.githubusercontent.com/u/7230720?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Thiru</b></sub></a><br /><a href="#example-Thiruppathi" title="Examples">💡</a> <a href="#maintenance-Thiruppathi" title="Maintenance">🚧</a></td>
-  </tr>
-</table>
+This will return the minimum secure version for each release line as JSON. In other words, what is the highest version of each line that has `security: true`.
 
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
+##### Example Response `/api/minimum-secure`
 
-<!-- ALL-CONTRIBUTORS-LIST:END -->
+```json
+{
+   "v0": {
+       "version": "v0.12.17",
+       "date": "2016-10-18",
+       "files": [],
+       "npm": "2.15.1",
+       "v8": "3.28.71.19",
+       "uv": "1.6.1",
+       "zlib": "1.2.8",
+       "openssl": "1.0.1u",
+       "modules": "14",
+       "lts": false,
+       "security": true
+   },
+   "v4": {
+       "version": "v4.9.0",
+       "date": "2018-03-28",
+       "files": [],
+       "npm": "2.15.11",
+       "v8": "4.5.103.53",
+       "uv": "1.9.1",
+       "zlib": "1.2.11",
+       "openssl": "1.0.2o",
+       "modules": "46",
+       "lts": "Argon",
+       "security": true
+   }
+}
+```
+
+#### GET - `/api/latest-releases`
+
+This will return the latest release version in each release line as JSON.
+
+##### Example Response `/api/latest-releases`
+
+```json
+{
+  "v14": {
+      "version": "v14.7.0",
+      "date": "2020-07-29",
+      "files": [],
+      "npm": "6.14.7",
+      "v8": "8.4.371.19",
+      "uv": "1.38.1",
+      "zlib": "1.2.11",
+      "openssl": "1.1.1g",
+      "modules": "83",
+      "lts": false,
+      "security": false
+  },
+  "v13": {
+      "version": "v13.14.0",
+      "date": "2020-04-28",
+      "files": [],
+      "npm": "6.14.4",
+      "v8": "7.9.317.25",
+      "uv": "1.37.0",
+      "zlib": "1.2.11",
+      "openssl": "1.1.1g",
+      "modules": "79",
+      "lts": false,
+      "security": false
+  }
+}
+```
+
+### Tests
+
+Each of the above endpoints should have its own tests. Use the provided `test/index.js` file to get started and see below for example output.
+
+#### Test Requirements
+
+- Write tests using `tape`
+- Mock http requests during tests by using `nock` to prevent live requests
+
+```bash
+# should get dependencies
+  ok 1 should contain bent
+  ok 2 should contain express
+  ok 3 should contain hbs
+  ok 4 should contain semver
+
+# should get minimum secure versions
+  ok 5 v14 version should match
+  ok 6 v13 version should match
+
+# should get latest-releases
+  ok 7 v14 version should match
+  ok 8 v13 version should match
+```
+
+## Dependencies
+
+| Name                                             | Description                                                       |
+| ------------------------------------------------ | ----------------------------------------------------------------- |
+| [bent](https://www.npmjs.com/package/bent)       | Functional HTTP client for Node.js and Browsers with async/await. |
+| [express](https://www.npmjs.com/package/express) | Fast, unopinionated, minimalist web framework for node.           |
+| [hbs](https://www.npmjs.com/package/hbs)         | Express.js view engine for handlebars.js                          |
+| [semver](https://www.npmjs.com/package/semver)   | The semantic versioner for npm                                    |
+
+### Development dependencies
+
+| Name                                               | Description                                              |
+| -------------------------------------------------- | -------------------------------------------------------- |
+| [get-port](https://www.npmjs.com/package/get-port) | Get an available TCP port                                |
+| [nock](https://www.npmjs.com/package/nock)         | HTTP server mocking and expectations library for Node.js |
+| [tape](https://www.npmjs.com/package/tape)         | tap-producing test harness for node and browsers         |
