@@ -92,7 +92,7 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       with:
-        image-ref: '222187627275.dkr.ecr.ap-southeast-2.amazonaws.com/nodejsdockerexample:$IMAGE_TAG'
+        image-ref: '222187627275.dkr.ecr.ap-southeast-2.amazonaws.com/nodejsdockerexample:${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
